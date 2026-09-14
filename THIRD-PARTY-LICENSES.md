@@ -1,17 +1,17 @@
 # Third-Party Licenses
 
-TypoCore incorporates modified and adapted source code from the following
+TypoCOM incorporates modified and adapted source code from the following
 third-party projects, used and redistributed under the terms of the MIT
 License below.
 
 ## TyperTool
 
-TypoCore's TypeBox engine (text-layer creation, style application,
+TypoCOM's TypeBox engine (text-layer creation, style application,
 font handling) is adapted from **TyperTool**.
 
 ## TypeR
 
-TypoCore's Align (automatic speech-bubble detection) and Multiple Bubble
+TypoCOM's Align (automatic speech-bubble detection) and Multiple Bubble
 (batch paste into multiple selections) features are adapted from **TypeR**
 by [ScanR](https://github.com/ScanR), a fork of TyperTool
 (`Swirt/typertools-src`). TypeR redistributes TyperTool's original code and
@@ -43,8 +43,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## TypoCore's own code
+## TypoCOM's own code
 
-All other code in TypoCore (TypeBox UI/UX, Quick Layout linking, style
+All other code in TypoCOM (TypeBox UI/UX, Quick Layout linking, style
 management, Multiple Bubble UI, and all files not listed above) is original
 work and is not covered by the license above.
