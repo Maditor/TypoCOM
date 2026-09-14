@@ -34,7 +34,7 @@ lại các nút cho vừa ý), Import/Export style, Advanced Setting (Pin Always
 | Phím | Chức năng |
 |---|---|
 | `Win + Ctrl` | Dán chữ (Typer Box hoặc Multiple Bubble, tuỳ cái nào đang bật) |
-| `Win + Alt` | Center (canh giữa) |
+| `Win + Alt` | Align (canh giữa) |
 | `Win + Shift + E` / `Win + Shift + D` | Chuyển dòng trước / dòng sau trong Typer Box |
 | `Win + Shift + B` | Bật/tắt Multiple Bubble |
  
