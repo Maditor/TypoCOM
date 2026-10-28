@@ -1,0 +1,2488 @@
+/* ============================================================
+   RESET & CORE
+   ============================================================ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    background: #2b2b2b;
+    color: #ccc;
+    padding: 8px 8px 0 8px;
+    user-select: none;
+    overflow-y: auto;
+    height: 100vh;
+    margin: 0;
+}
+
+/* ============================================================
+   LAYOUT (Panel, Footer)
+   ============================================================ */
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 100%;
+    overflow: visible;
+}
+
+.panel-footer {
+    margin-top: auto;
+    padding: 6px 0;
+    border-top: 1px solid #444;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: sticky;
+    bottom: 0;
+    background: #2b2b2b;
+    z-index: 9999;
+}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section {
+    border: 1px solid #444;
+    border-radius: 3px;
+    padding: 6px;
+}
+
+.section-title {
+    font-size: 10px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+/* Edit mode styles */
+.edit-mode .section {
+    border-color: #f90 !important;
+    cursor: grab;
+}
+
+.edit-mode .section:active {
+    cursor: grabbing;
+}
+
+.drag-handle {
+    display: none;
+    float: right;
+    color: #f90;
+    font-size: 10px;
+    cursor: grab;
+    padding: 0 2px;
+    user-select: none;
+}
+
+.edit-mode .drag-handle {
+    display: inline;
+}
+
+.dragging {
+    opacity: 0.4;
+    border: 1px dashed #f90 !important;
+}
+
+.drag-over {
+    border-color: #ff0 !important;
+    background: #3a3500 !important;
+}
+
+.edit-mode [data-tool] {
+    border-color: #f90 !important;
+    cursor: grab !important;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+button {
+    background: #3c3c3c;
+    color: #ccc;
+    border: 1px solid #555;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    transition: background 0.1s;
+}
+
+button:hover {
+    background: #4a4a4a;
+}
+
+button:active {
+    transform: scale(0.97);
+    transition: none;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+button:focus,
+button:focus-visible {
+    outline: none;
+}
+
+/* Flash states */
+button.flash-ok {
+    background: #2a5a2a !important;
+    color: #7f7 !important;
+}
+
+button.flash-err {
+    background: #5a2a2a !important;
+    color: #f77 !important;
+}
+
+/* ============================================================
+   CASE GRID, SPLIT, SIZE ROW
+   ============================================================ */
+.case-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.case-row {
+    display: flex;
+    gap: 4px;
+}
+
+.case-row button {
+    flex: 1;
+    height: 26px;
+}
+
+.split-row {
+    display: flex;
+    gap: 4px;
+}
+
+.split-row button {
+    flex: 1;
+    height: 26px;
+}
+
+/* ============================================================
+   PASTE TEXT (Texter — TyperTools bridge)
+   ============================================================ */
+.tt-big-btn {
+    display: block;
+    width: 100%;
+    height: 32px;
+    margin-bottom: 8px;
+    background: #288edf;
+    border-color: #134f7f;
+    color: #fff;
+    font-weight: 700;
+}
+.tt-big-btn:hover { background: #4ca1e4; }
+.tt-big-btn:active { background: #1e7dc8; }
+
+.tt-styles-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+.tt-styles-toolbar-title {
+    flex: 1;
+    font-size: 11px;
+    color: #999;
+}
+
+/* ---- preview-bottom: nav ▲▼ + preview-current ---- */
+.tt-preview-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.tt-preview-nav {
+    flex: 0 0 auto;
+    width: 22px;
+    display: flex;
+    flex-direction: column;
+}
+.tt-preview-nav button {
+    height: 17px;
+    width: 22px;
+    padding: 0;
+    font-size: 9px;
+}
+.tt-preview-nav button + button { margin-top: 2px; }
+
+.tt-preview-current {
+    flex-grow: 2;
+    min-width: 0;
+    height: 36px;
+    border: 1px solid #555;
+    border-radius: 6px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.tt-preview-line-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    padding: 1px 3px 1px 5px;
+    flex: 0 0 auto;
+}
+
+.tt-preview-line-info-text {
+    flex-grow: 2;
+    min-width: 0;
+    font-size: 9px;
+    color: #ccc;
+    opacity: 0.6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tt-preview-line-info-text b { font-size: 9px; color: #fff; }
+
+.tt-preview-line-style-name {
+    display: inline-block;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    white-space: nowrap;
+    margin-left: 3px;
+}
+
+.tt-preview-line-info-color {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 4px;
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 50%;
+    box-shadow: 0 0 3px 1px rgba(0,0,0,0.4);
+    background: #888;
+    position: relative;
+    top: 1px;
+}
+
+.tt-preview-line-text {
+    flex-grow: 2;
+    font-size: 10px;
+    letter-spacing: 0.3px;
+    color: #fff;
+    padding: 2px 5px;
+    overflow: auto;
+    word-break: break-word;
+}
+
+/* ---- text-block: MỘT ô duy nhất — textarea trong suốt đè lên nền số dòng/highlight ----
+   Chiều cao CỐ ĐỊNH (không tự phình theo nội dung) — chỉnh bằng thanh kéo .tt-text-resize-handle */
+.tt-text-block {
+    position: relative;
+    border: 1px solid #444;
+    border-radius: 3px 3px 0 0;
+    background: #1a1a1a;
+    height: 90px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
+.tt-text-resize-handle {
+    flex-shrink: 0;
+    height: 5px;
+    background: #555;
+    cursor: ns-resize;
+    border-radius: 0 0 3px 3px;
+    margin-bottom: 6px;
+}
+.tt-text-resize-handle:hover { background: #777; }
+
+/* Custom scrollbar cho ô dán chữ — đồng bộ với .fx-scroll */
+.tt-text-block::-webkit-scrollbar { width: 7px; height: 7px; background: #1a1a1a; }
+.tt-text-block::-webkit-scrollbar-track { background: #2b2b2b; }
+.tt-text-block::-webkit-scrollbar-thumb { background: #777; border-radius: 2px; }
+.tt-text-block::-webkit-scrollbar-thumb:hover { background: #555; }
+.tt-text-block::-webkit-scrollbar-corner { background: #1a1a1a; }
+
+/* ---- Vùng cuộn của cả section Typer Box (text-block + styles) — đồng bộ .fx-scroll/.fx-resize-handle ---- */
+.tt-texter-scroll {
+    overflow-y: auto;
+    height: 220px;
+    padding-bottom: 2px;
+    padding-right: 2px;
+    overscroll-behavior: contain;
+}
+.tt-texter-scroll::-webkit-scrollbar { width: 7px; height: 7px; background: #1a1a1a; }
+.tt-texter-scroll::-webkit-scrollbar-track { background: #2b2b2b; }
+.tt-texter-scroll::-webkit-scrollbar-thumb { background: #777; border-radius: 2px; }
+.tt-texter-scroll::-webkit-scrollbar-thumb:hover { background: #555; }
+.tt-texter-scroll::-webkit-scrollbar-corner { background: #1a1a1a; }
+
+.tt-resize-handle {
+    flex-shrink: 0;
+    height: 5px;
+    background: #555;
+    cursor: ns-resize;
+    margin-top: 2px;
+}
+.tt-resize-handle:hover { background: #777; }
+
+/* Lớp nền: số dòng bên trái + vệt highlight dòng hiện tại + icon dán riêng dòng bên phải.
+   Nằm dưới (z-index thấp) nhưng 2 cột gutter KHÔNG bị textarea che vì textarea hẹp hơn (margin 2 bên). */
+.tt-text-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+.tt-text-line-row {
+    display: flex;
+    align-items: stretch;
+    border-top: 1px dashed #2c2c2c;
+}
+.tt-text-line-row:first-child { border-top: none; }
+
+.tt-text-line-row.m-current { background: rgba(40,142,223,0.28); }
+.tt-text-line-row.m-hover:not(.m-current) { background: rgba(255,255,255,0.07); }
+
+.tt-text-line-num {
+    flex: 0 0 24px;
+    align-self: flex-start;
+    text-align: right;
+    padding-right: 4px;
+    line-height: 18px;
+    color: #777;
+    font-size: 10px;
+    cursor: pointer;
+}
+.tt-text-line-num:hover { color: #fff; }
+
+.tt-text-line-fill { flex: 1 1 auto; }
+
+.tt-text-line-insert {
+    flex: 0 0 20px;
+    width: 20px;
+    height: 16px;
+    align-self: flex-start;
+    margin-top: 1px;
+    margin-right: 2px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 9px;
+    line-height: 1;
+    position: relative;
+    z-index: 3;
+}
+
+/* Lớp trên: textarea thật, nội dung gõ/dán hiển thị ở đây.
+   Hẹp hơn container (margin-left = độ rộng cột số, margin-right = độ rộng icon)
+   => 2 gutter bên dưới không bị che, vẫn bấm được.
+   Xuống dòng MỀM theo khung (wrap="soft"); chỉ Enter (\n) mới được tính là 1 dòng mới
+   trong logic tách dòng — xuống dòng do chật khung chỉ là hiển thị, JS vẫn coi là 1 dòng. */
+.tt-text-area {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: calc(100% - 24px - 22px);
+    margin-left: 24px;
+    box-sizing: border-box;
+    background: transparent;
+    color: #ddd;
+    border: none;
+    padding: 0 2px;
+    font-size: 11px;
+    font-family: monospace;
+    line-height: 18px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    overflow: hidden;
+    resize: none;
+}
+
+/* Div ẩn dùng để đo chiều cao thật của 1 dòng khi bị wrap theo khung hiện tại */
+.tt-text-measure {
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    height: auto;
+    z-index: -1;
+    width: calc(100% - 24px - 22px);
+    margin-left: 24px;
+    box-sizing: border-box;
+    padding: 0 2px;
+    font-size: 11px;
+    font-family: monospace;
+    line-height: 18px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+
+
+/* ---- styles-block: folder header (thu gọn/mở rộng) + nút + Add style nhỏ + style grid ---- */
+.tt-folder-item {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.tt-folder-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 6px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #ccc;
+    background: rgba(0,0,0,0.35);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.tt-folder-marker {
+    flex: 0 0 auto;
+    width: 12px;
+    transition: transform 0.15s;
+    opacity: 0.6;
+}
+
+.tt-folder-actions {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 3px;
+}
+.tt-folder-actions button {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    font-size: 8px;
+    line-height: 1;
+}
+.tt-folder-item.collapsed .tt-folder-marker { transform: rotate(-90deg); }
+.tt-folder-item.collapsed .tt-styles-list { display: none; }
+.tt-folder-item.collapsed .tt-folder-header { border-bottom: none; }
+
+.tt-folder-title {
+    flex-grow: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.2px;
+}
+.tt-folder-count {
+    font-size: 10px;
+    opacity: 0.5;
+    margin-left: 4px;
+}
+
+.tt-folder-add-btn {
+    flex: 0 0 auto;
+    min-width: 24px;
+    height: 18px;
+    padding: 0 4px;
+    font-size: 10px;
+    line-height: 1;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tt-folder-add-btn svg {
+    display: block;
+}
+
+.tt-styles-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px;
+}
+
+.tt-style-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 5px 5px 7px;
+    font-size: 12px;
+    color: #ccc;
+    opacity: 0.85;
+    cursor: pointer;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.09);
+}
+/* Panel rộng từ 400px trở lên -> chia 2 cột, tối đa 2 cột (không chia thêm dù panel rộng hơn nữa) */
+@media (min-width: 400px) {
+    .tt-style-item {
+        width: calc(50% - 3px);
+    }
+}
+.tt-style-item:hover { opacity: 1; outline: 1px solid rgba(255,255,255,0.3); }
+
+.tt-style-item.m-current {
+    background: #288edf;
+    color: #fff;
+    opacity: 1;
+    outline: 1px solid #134f7f;
+    border-color: #134f7f;
+}
+
+.tt-style-dot {
+    flex: 0 0 auto;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #888;
+    border: 1px solid rgba(255,255,255,0.8);
+    box-shadow: 0 0 4px 1px rgba(0,0,0,0.4);
+}
+.tt-style-item.m-current .tt-style-dot { border-color: #1a1a1a; }
+
+.tt-style-name {
+    flex-grow: 2;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    cursor: grab;
+}
+
+.tt-style-actions {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 3px;
+}
+.tt-style-actions button {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    font-size: 9px;
+    line-height: 1;
+}
+
+.tt-style-empty {
+    padding: 10px 6px;
+    text-align: center;
+    color: #666;
+    font-size: 10px;
+    width: 100%;
+}
+
+/* ---- Style Edit Panel ---- */
+.tt-style-edit-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
+    /* Cao hơn hẳn Quick Layout/FX Studio (z-index 1000) để backdrop tối luôn phủ lên trên,
+       nhưng vẫn thấp hơn color picker popup (100000) phòng khi cần mở picker đè lên trên panel. */
+    z-index: 50000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 10%;
+}
+
+.tt-style-edit-panel {
+    width: 90%;
+    max-width: 320px;
+    background: #2a2a2a;
+    border: 1px solid #555;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+
+.tt-style-edit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    background: #222;
+    font-size: 12px;
+    font-weight: 700;
+    color: #eee;
+}
+
+.tt-style-edit-x {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tt-style-edit-body {
+    padding: 10px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.tt-style-toggle-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.tt-style-toggle-btn {
+    flex: 1;
+    height: 26px;
+    font-size: 12px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.tt-style-toggle-btn svg { display: block; }
+.tt-style-toggle-btn.m-active {
+    background: #288edf;
+    border-color: #134f7f;
+    color: #fff;
+}
+
+.tt-style-edit-row {
+    display: block;
+    margin-bottom: 8px;
+}
+.tt-style-edit-row span {
+    display: block;
+    font-size: 10px;
+    color: #999;
+    margin-bottom: 3px;
+}
+.tt-style-edit-row input[type="text"],
+.tt-style-edit-row input[type="number"],
+.tt-style-edit-row select {
+    width: 100%;
+    box-sizing: border-box;
+    height: 26px;
+    background: #1a1a1a;
+    color: #ddd;
+    border: 1px solid #444;
+    border-radius: 3px;
+    padding: 0 6px;
+    font-size: 11px;
+}
+.tt-style-edit-row input[type="color"] {
+    width: 100%;
+    height: 26px;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    padding: 2px;
+}
+
+.tt-style-edit-copybtn {
+    width: 100%;
+    height: 28px;
+    margin-bottom: 6px;
+    background: #288edf;
+    color: #fff;
+    border-color: #134f7f;
+}
+.tt-style-edit-copybtn:hover { background: #4ca1e4; }
+
+.tt-style-edit-warning {
+    font-size: 10px;
+    color: #d8a33a;
+    background: rgba(216,163,58,0.1);
+    border: 1px solid rgba(216,163,58,0.3);
+    border-radius: 3px;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+}
+
+.tt-style-edit-row2 {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.tt-style-edit-row2 label { flex: 1; display: block; }
+.tt-style-edit-row2 label span {
+    display: block;
+    font-size: 10px;
+    color: #999;
+    margin-bottom: 3px;
+}
+.tt-icon-label {
+    display: flex !important;
+    align-items: center;
+    gap: 3px;
+}
+.tt-icon-label svg { flex-shrink: 0; opacity: 0.8; }
+
+.tt-style-edit-copybtn, .tt-style-edit-footer button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+.tt-style-edit-copybtn svg, .tt-style-edit-footer button svg { flex-shrink: 0; }
+.tt-style-edit-row2 input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 26px;
+    background: #1a1a1a;
+    color: #ddd;
+    border: 1px solid #444;
+    border-radius: 3px;
+    padding: 0 6px;
+    font-size: 11px;
+}
+
+/* Ẩn 2 mũi tên tăng/giảm mặc định của ô số — che mất số hiển thị, để người dùng tự gõ số. */
+#styleEditOverlay input[type=number]::-webkit-outer-spin-button,
+#styleEditOverlay input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#styleEditOverlay input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Icon-cạnh-ô kiểu Figma: icon đứng bên trái, đơn vị (pt/%) nằm CHUNG trong khung với ô nhập,
+   không tách label chữ ra phía trên như các field kiểu cũ (Auto leading %, Stroke...). */
+.tt-style-edit-row2 .tt-field-row {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+.tt-field-icon {
+    flex: 0 0 auto;
+    width: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+.tt-numfield {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    height: 26px;
+    min-width: 0;
+    box-sizing: border-box;
+}
+.tt-style-edit-row2 .tt-numfield input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: #ddd;
+    font-size: 11px;
+    padding: 0 0 0 6px;
+    box-sizing: border-box;
+}
+.tt-unit {
+    flex: 0 0 auto;
+    font-size: 9px;
+    color: #888;
+    padding-right: 6px;
+    white-space: nowrap;
+}
+.tt-field-row select {
+    flex: 1;
+    height: 26px;
+    background: #1a1a1a;
+    color: #ddd;
+    border: 1px solid #444;
+    border-radius: 3px;
+    padding: 0 4px;
+    font-size: 11px;
+    min-width: 0;
+}
+.tt-colorswatch {
+    flex: 1;
+    height: 26px;
+    padding: 2px;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.tt-colorswatch-lg {
+    flex: 0 0 44px;
+    height: 30px;
+}
+
+.tt-style-edit-align-row {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-bottom: 4px;
+}
+.tt-style-edit-align-row span {
+    font-size: 10px;
+    color: #999;
+    flex-shrink: 0;
+}
+.tt-align-btn-small {
+    flex: 1;
+    height: 24px;
+    font-size: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.tt-align-btn-small svg { display: block; }
+.tt-align-btn-small.active, .tt-align-btn-small.m-active {
+    background: #288edf;
+    color: #fff;
+    border-color: #134f7f;
+}
+.tt-style-edit-vdivider {
+    width: 1px;
+    height: 16px;
+    background: #444;
+    flex: 0 0 auto;
+    margin: 0 2px;
+}
+
+.tt-style-edit-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 8px 10px;
+    background: #222;
+}
+.tt-style-edit-footer button {
+    flex: 1;
+    height: 28px;
+}
+.tt-style-edit-footer .tt-big-btn {
+    width: auto;
+    margin-right: 0;
+}
+.tt-style-edit-delete {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    color: #e08a8a;
+    border-color: #5a3030;
+    background: #3a2424;
+}
+.tt-style-edit-delete:hover { background: #4a2c2c; }
+
+
+/* ============================================================
+   ACTION GRID (Sortable)
+   ============================================================ */
+.action-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.action-row {
+    display: flex;
+    gap: 4px;
+    min-height: 36px;
+    transition: all 0.1s;
+}
+
+.action-row button {
+    flex: 1;
+    height: 36px;
+    font-size: 11px;
+}
+
+.edit-mode .action-row:empty {
+    border: 1px dashed #f90;
+    background: #2a2a2a;
+    border-radius: 3px;
+    margin-bottom: 4px;
+    position: relative;
+    min-height: 32px;
+}
+
+.edit-mode .action-row:empty::before {
+    content: "DRAG BUTTON HERE";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    color: #aaa;
+    white-space: nowrap;
+    pointer-events: none;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* ============================================================
+   SETTING POPUP
+   ============================================================ */
+.setting-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.mb-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #666;
+    margin-right: 5px;
+    vertical-align: middle;
+    transition: background 0.15s;
+}
+.mb-dot.mb-active {
+    background: #3ecf5e;
+    box-shadow: 0 0 4px 1px rgba(62,207,94,0.6);
+}
+#btnToggleAutoShape svg, #btnToggleAutoFit svg, #btnMultipleBubble svg, #btnAlignSimple svg, #settingBtn svg {
+    vertical-align: middle;
+}
+
+.mb-info-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 3px 0;
+    font-size: 10px;
+    color: #ccc;
+    background: rgba(62,207,94,0.08);
+    border: 1px solid rgba(62,207,94,0.25);
+    border-radius: 3px;
+}
+#mbInfoCount { font-weight: 700; color: #3ecf5e; }
+.mb-info-sep { color: #555; }
+.mb-info-link {
+    background: none;
+    border: none;
+    color: #ccc;
+    text-decoration: underline;
+    font-size: 10px;
+    padding: 0;
+    height: auto;
+    cursor: pointer;
+}
+.mb-info-link:hover { color: #fff; }
+
+.setting-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 2px 0;
+    font-family: Arial, sans-serif;
+}
+
+.setting-btn:hover {
+    color: #fff;
+}
+
+.setting-popup {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 4px;
+    background: #383838;
+    border: 1px solid #555;
+    border-radius: 4px;
+    z-index: 999999;
+    min-width: 180px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    padding: 4px 0;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.setting-popup.show {
+    display: block;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #ddd;
+    white-space: nowrap;
+}
+
+.setting-item:hover {
+    background: #4a4a4a;
+}
+
+.setting-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.tt-setting-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.tt-setting-disabled:hover { background: none; }
+
+.setting-separator {
+    border-top: 1px solid #555;
+    margin: 4px 0;
+}
+
+/* ============================================================
+   QUICK LAYOUT (Preview)
+   ============================================================ */
+#previewOverlay {
+    display: none;
+    position: relative;
+    z-index: 1000;
+    margin-top: 4px;
+    pointer-events: none;
+}
+
+#previewPopup {
+    position: relative;
+    width: 100%;
+    max-height: 1080px;
+    background: #2b2b2b;
+    border: 1px solid #555;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    pointer-events: auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+}
+
+.preview-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: #3a3a3a;
+    border-bottom: 1px solid #555;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.preview-header button {
+    width: 36px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.preview-header button:hover {
+    background: #5a5a5a;
+}
+
+.preview-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    overflow-y: auto;
+    flex: 1;
+    margin-bottom: 8px;
+    overscroll-behavior: contain;
+}
+
+.preview-item {
+    background: #383838;
+    border: 1px solid #4a4a4a;
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center;
+    font-size: 8px;
+    color: #ddd;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    width: max-content;
+    min-width: 100%;
+}
+
+.preview-item:hover {
+    background: #4a4a4a;
+    border-color: #888;
+}
+
+#btnPreviewLayout {
+    height: 24px;
+    width: 100%;
+}
+
+.preview-grid.horizontal {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-bottom: 8px;
+}
+
+.preview-grid.horizontal .preview-item {
+    flex: 0 0 auto;
+    min-width: 150px;
+    width: max-content;
+    white-space: nowrap;
+}
+
+/* Preview toolbar */
+.preview-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 6px;
+    height: 35px;
+    background: #2b2b2b;
+    border-top: 1px solid #555;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.preview-toolbar button {
+    height: 22px;
+    font-size: 10px;
+    padding: 0 6px;
+    background: #3c3c3c;
+    border: 1px solid #555;
+    color: #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.preview-toolbar button:hover {
+    background: #4a4a4a;
+}
+
+#previewSizeDisplay {
+    font-size: 11px;
+    font-weight: bold;
+    color: #eee;
+    min-width: 24px;
+    text-align: center;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 1px 4px;
+    line-height: 1.4;
+}
+
+.size-group {
+    display: flex;
+    align-items: center;
+}
+
+.size-group > * {
+    margin: 0;
+    border-radius: 0;
+}
+
+.size-group > button:first-child {
+    border-radius: 3px 0 0 3px;
+}
+
+.size-group > button:last-child {
+    border-radius: 0 3px 3px 0;
+}
+
+#previewSizeDisplay {
+    border-left: none;
+    border-right: none;
+}
+
+/* Font picker popup */
+#fontPickerPopup {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 200;
+    background: #383838;
+    border: 1px solid #888;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    max-height: 260px;
+    display: none;
+    flex-direction: column;
+}
+
+.preview-subpopup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: #3a3a3a;
+    border-bottom: 1px solid #555;
+    font-weight: bold;
+    font-size: 12px;
+    color: #eee;
+    flex-shrink: 0;
+}
+
+.preview-subpopup-header button {
+    background: none;
+    border: none;
+    color: #ddd;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 4px;
+}
+
+.preview-subpopup-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 4px;
+}
+
+.preview-subpopup-footer {
+    border-top: 1px solid #555;
+    padding: 6px;
+    flex-shrink: 0;
+}
+
+.preview-subpopup-footer button {
+    width: 100%;
+    height: 26px;
+    font-size: 11px;
+}
+
+.font-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.font-item:hover {
+    background: #4a4a4a;
+}
+
+.font-item.selected {
+    background: #288edf;
+    color: #fff;
+}
+
+.font-item .font-index {
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.font-item .font-remove {
+    color: #f77;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 14px;
+}
+
+.font-item .font-select {
+    flex: 1;
+    min-width: 0;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    font-size: 11px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    margin: 0 6px;
+}
+.font-item.selected .font-select {
+    background: #1a5f9c;
+    border-color: #134f7f;
+    color: #fff;
+}
+
+.font-item .font-name input {
+    width: 100%;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    font-size: 11px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.preview-subpopup-footer-add {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px;
+    border-top: 1px solid #555;
+    flex-shrink: 0;
+    align-items: stretch;
+}
+
+.preview-subpopup-footer-add input {
+    height: 24px;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    outline: none;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.preview-subpopup-footer-add input:focus {
+    border-color: #888;
+}
+
+.preview-subpopup-footer-add button {
+    height: 24px;
+    font-size: 11px;
+    padding: 0 12px;
+    background: #3c3c3c;
+    border: 1px solid #555;
+    color: #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    white-space: nowrap;
+    align-self: center;
+    min-width: 60px;
+}
+
+/* ============================================================
+   FX MANAGER (Overlay & Popup)
+   ============================================================ */
+#fxOverlay {
+    position: relative;
+    z-index: 10;
+    margin-top: 4px;
+}
+
+.fx-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+    background: #3a3a3a;
+    border-bottom: 1px solid #555;
+    border-radius: 6px 6px 0 0;
+    flex-shrink: 0;
+}
+
+.fx-header button {
+    background: #4a4a4a;
+    border: 1px solid #666;
+    color: #ddd;
+    padding: 4px 12px;
+    font-size: 11px;
+    border-radius: 3px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.fx-header button:hover {
+    background: #5a5a5a;
+}
+
+.fx-section {
+    padding: 5px 2px;
+    border-bottom: 1px solid #333;
+}
+
+.fx-section-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 4px;
+}
+
+.fx-section-header label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #ccc;
+    font-weight: bold;
+    flex: 1;
+    cursor: pointer;
+}
+
+.fx-section-header .fx-swatches {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}
+
+.fx-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 3px;
+}
+
+.fx-row-label {
+    font-size: 10px;
+    color: #999;
+    width: 40px;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.fx-row input[type="range"] {
+    flex: 1;
+    height: 3px;
+    accent-color: #f90;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.fx-row-val {
+    width: 36px;
+    height: 22px;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    font-size: 11px;
+    text-align: center;
+    border-radius: 3px;
+    padding: 0 2px;
+    box-sizing: border-box;
+}
+
+.fx-row-val:focus {
+    border-color: #f90;
+    outline: none;
+}
+
+/* Gradient angle row */
+.fx-angle-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    margin-bottom: 3px;
+    flex-wrap: nowrap;
+}
+
+.fx-angle-row canvas {
+    width: 40px;
+    height: 40px;
+    cursor: grab;
+    flex-shrink: 0;
+}
+
+.fx-angle-row canvas:active {
+    cursor: grabbing;
+}
+
+.fx-angle-row .fx-angle-label {
+    font-size: 10px;
+    color: #999;
+    flex-shrink: 0;
+}
+
+#gradientAngleInput {
+    width: 42px;
+    height: 22px;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    font-size: 11px;
+    text-align: center;
+    border-radius: 3px;
+    box-sizing: border-box;
+    margin-left: auto;
+}
+
+/* ===== DROP SHADOW – RIÊNG BIỆT NHƯNG ĐỒNG BỘ VỚI GRADIENT ===== */
+#shadowAngleInput {
+    width: 42px;
+    height: 22px;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    font-size: 11px;
+    text-align: center;
+    border-radius: 3px;
+    box-sizing: border-box;
+    margin-left: auto;
+}
+
+#shadowAngleCanvas {
+    width: 40px;
+    height: 40px;
+    cursor: grab;
+    flex-shrink: 0;
+}
+
+#shadowAngleCanvas:active {
+    cursor: grabbing;
+}
+
+/* Ẩn hoàn toàn "Use Global Light" nếu vẫn còn trong DOM */
+.fx-global-light {
+    display: none !important;
+}
+
+/* Đồng bộ kích thước cho dropdown Blend */
+.fx-select {
+    flex: 1;
+    height: 22px;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    font-size: 11px;
+    border-radius: 3px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.fx-select:focus {
+    border-color: #f90;
+    outline: none;
+}
+
+/* Stroke single line */
+.fx-stroke-single {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: #aaa;
+    margin-top: 1px;
+}
+
+/* Color swatches */
+.color-swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    border: 1px solid #888;
+    cursor: pointer;
+    background: transparent;
+    flex-shrink: 0;
+}
+
+/* Quick FG/BG button */
+.quick-fgbg {
+    background: #3c3c3c;
+    border: 1px solid #555;
+    border-radius: 3px;
+    color: #ccc;
+    font-size: 12px;
+    padding: 3px 3px;
+    cursor: pointer;
+    height: 22px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.quick-fgbg:hover {
+    background: #4a4a4a;
+}
+
+.quick-fgbg:active {
+    transform: scale(0.96);
+}
+
+/* Color picker popup (global) */
+#colorPickerPopup {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    flex-direction: column;
+    background: #383838;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 6px 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    min-width: 120px;
+    max-width: 120px;
+}
+
+.color-presets {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.recent-colors {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0;
+    justify-content: flex-start;
+}
+
+.recent-colors .swatch {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: none;
+    outline: 1px solid #444;
+    outline-offset: -1px;
+    border-radius: 1px;
+    flex-shrink: 0;
+}
+
+/* Color grid */
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 14px);
+    gap: 1px;
+    justify-content: start;
+    margin-top: 4px;
+    margin-bottom: 2px;
+}
+
+.color-grid > div {
+    width: 14px;
+    height: 14px;
+    border: none;
+    outline: 1px solid #444;
+    outline-offset: -1px;
+    transition: transform 0.05s;
+}
+
+.color-grid > div:hover {
+    transform: scale(1.1);
+    z-index: 1;
+}
+
+/* ============================================================
+   FX MANAGER POPUP (main container & scroll)
+   ============================================================ */
+#fxPopup {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    overflow: hidden;
+}
+
+.fx-scroll {
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-bottom: 5px;
+    overscroll-behavior: contain;
+}
+
+.fx-resize-handle {
+    flex-shrink: 0;
+    height: 5px;
+    background: #555;
+    cursor: ns-resize;
+}
+
+.fx-resize-handle:hover {
+    background: #777;
+}
+
+.fx-toolbar {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    border-top: 1px solid #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2b2b2b;
+    position: relative;
+}
+
+#btnFxToggleMode {
+    position: absolute;
+    left: 8px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 10px;
+    cursor: pointer;
+    padding: 2px 0;
+    text-decoration: underline;
+    font-family: Arial, sans-serif;
+}
+
+#btnFxToggleMode:hover {
+    color: #ccc;
+}
+
+#btnFxApply {
+    height: 23px;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 0 20px;
+}
+
+#btnFxApply:hover {
+    background: #4a4a4a;
+}
+
+/* Accordion effect for sections (JS controlled) */
+.fx-section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease;
+    margin: 0;
+    padding: 0;
+}
+
+/* Custom scrollbar for fx-scroll */
+.fx-scroll::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+    background: #1a1a1a;
+}
+
+.fx-scroll::-webkit-scrollbar-track {
+    background: #2b2b2b;
+}
+
+.fx-scroll::-webkit-scrollbar-thumb {
+    background: #777;
+    border-radius: 2px;
+}
+
+.fx-scroll::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.fx-scroll::-webkit-scrollbar-corner {
+    background: #1a1a1a;
+}
+
+/* Custom checkboxes */
+.fx-section-header input[type="checkbox"],
+.fx-stroke-single input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #3c3c3c;
+    border: 1px solid #777;
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    margin: 0 4px 0 0;
+    vertical-align: middle;
+}
+
+.fx-section-header input[type="checkbox"]:checked,
+.fx-stroke-single input[type="checkbox"]:checked {
+    background: #888;
+    border-color: #aaa;
+}
+
+.fx-section-header input[type="checkbox"]:checked::after,
+.fx-stroke-single input[type="checkbox"]:checked::after {
+    content: "✔";
+    position: absolute;
+    top: -2px;
+    left: 2px;
+    font-size: 10px;
+    color: #fff;
+}
+
+/* Custom range slider */
+.fx-row input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #444;
+    height: 3px;
+    border-radius: 2px;
+    outline: none;
+}
+
+.fx-row input[type="range"]:focus {
+    outline: none;
+}
+
+.fx-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 8px;
+    height: 12px;
+    background: #999;
+    border-radius: 2px;
+    cursor: pointer;
+    margin-top: -4px;
+}
+
+.fx-row input[type="range"]::-webkit-slider-thumb:hover {
+    background: #bbb;
+}
+
+.fx-row input[type="range"]::-webkit-slider-runnable-track {
+    height: 3px;
+    background: #444;
+    border-radius: 2px;
+}
+
+/* Spinner animation */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================================
+   FX MANAGER - LESS MODE (compact)
+   ============================================================ */
+#fxPopup.fx-less-mode .fx-section {
+    padding: 2px 0 !important;
+    margin-bottom: 0;
+}
+
+#fxPopup.fx-less-mode .fx-section-header {
+    margin-bottom: 2px !important;
+    padding: 3px 6px !important;
+}
+
+#fxPopup.fx-less-mode .fx-section-header label {
+    font-size: 10px;
+    line-height: 18px;
+}
+
+#fxPopup.fx-less-mode .fx-section-body {
+    padding: 0 0 2px 0 !important;
+}
+
+#fxPopup.fx-less-mode .fx-row {
+    margin-bottom: 2px !important;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#fxPopup.fx-less-mode .fx-row-label {
+    width: 36px;
+    font-size: 9px;
+    line-height: 20px;
+}
+
+#fxPopup.fx-less-mode .fx-row input[type="range"] {
+    height: 2px;
+    margin: 0;
+    flex: 1;
+}
+
+#fxPopup.fx-less-mode .fx-row-val,
+#fxPopup.fx-less-mode #gradientAngleInput,
+#fxPopup.fx-less-mode #shadowAngleInput {
+    height: 22px;
+    width: 38px;
+    font-size: 10px;
+    padding: 4px 0 !important;
+    text-align: center;
+    box-sizing: border-box;
+    border: 1px solid #555;
+    background: #222;
+    color: #eee;
+    border-radius: 3px;
+    margin: 0;
+    flex-shrink: 0;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    line-height: normal !important;
+}
+
+/* override width for angle inputs in less mode */
+#fxPopup.fx-less-mode #gradientAngleInput,
+#fxPopup.fx-less-mode #shadowAngleInput {
+    width: 42px;
+}
+
+/* Hide spinners */
+#fxPopup.fx-less-mode .fx-row-val::-webkit-inner-spin-button,
+#fxPopup.fx-less-mode .fx-row-val::-webkit-outer-spin-button,
+#fxPopup.fx-less-mode #gradientAngleInput::-webkit-inner-spin-button,
+#fxPopup.fx-less-mode #gradientAngleInput::-webkit-outer-spin-button,
+#fxPopup.fx-less-mode #shadowAngleInput::-webkit-inner-spin-button,
+#fxPopup.fx-less-mode #shadowAngleInput::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#fxPopup.fx-less-mode .fx-angle-row {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#fxPopup.fx-less-mode .color-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#fxPopup.fx-less-mode .fx-angle-row canvas {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+#fxPopup.fx-less-mode .quick-fgbg {
+    height: 20px;
+    line-height: 18px;
+    font-size: 9px;
+    padding: 0 6px;
+}
+
+#fxPopup.fx-less-mode .fx-swatches {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+/* Hide number inputs in Less mode (if desired - kept from original) */
+#fxPopup.fx-less-mode .fx-row-val,
+#fxPopup.fx-less-mode #gradientAngleInput,
+#fxPopup.fx-less-mode #shadowAngleInput {
+    display: none !important;
+}
+
+/* ============================================================
+   PRV NEW TOOLBAR (additional styles)
+   ============================================================ */
+#btnPreviewMode {
+    background: #3c3c3c;
+    border: 1px solid #666;
+    color: #ccc;
+    padding: 3px 8px;
+    font-size: 13px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#btnPreviewMode:hover {
+    background: #5a5a5a;
+}
+
+.prv-left-btn {
+    height: 22px;
+    font-size: 10px;
+    padding: 0 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.prv-ctrl-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.prv-apply-btn {
+    width: 20px;
+    height: 22px;
+    font-size: 13px;
+    padding: 0;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* Spinbox */
+.prv-spinbox {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.prv-spinbox input[type="number"] {
+    width: 52px;
+    height: 22px;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 0 22px 0 4px;
+    border-radius: 3px;
+    outline: none;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.prv-spinbox input[type="number"]::-webkit-inner-spin-button,
+.prv-spinbox input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.prv-spinbox input[type="number"]:focus {
+    border-color: #888;
+    background: #2a2a2a;
+}
+
+.prv-spinbox-btns {
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    bottom: 1px;
+    display: flex;
+    flex-direction: column;
+    width: 18px;
+}
+
+.prv-spinbox-btns button {
+    flex: 1;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-left: 1px solid #555;
+    background: #3a3a3a;
+    color: #999;
+    font-size: 7px;
+    cursor: pointer;
+    line-height: 1;
+    border-radius: 0;
+    height: auto;
+    min-height: 0;
+    transform: none;
+}
+
+.prv-spinbox-btns button:first-child {
+    border-radius: 0 2px 0 0;
+    border-bottom: 1px solid #444;
+}
+
+.prv-spinbox-btns button:last-child {
+    border-radius: 0 0 2px 0;
+}
+
+.prv-spinbox-btns button:hover {
+    background: #505050;
+    color: #fff;
+}
+
+.prv-spinbox-btns button:active {
+    background: #222;
+    transform: none;
+}
+
+/* Hide spin when mode = font */
+#sizeControl[data-mode="font"] .prv-spinbox-btns {
+    display: none;
+}
+
+/* Mode Font: center number */
+#sizeControl[data-mode="font"] .prv-spinbox input {
+    padding: 4px 8px;
+    text-align: center;
+}
+
+/* Mode Center: number aligned left */
+#sizeControl[data-mode="center"] .prv-spinbox input {
+    padding: 4px 20px 4px 0;
+    text-align: center;
+}
+
+/* ============================================================
+   COMPACT MODE OVERRIDES (Headers/Toolbars)
+   ============================================================ */
+/* Quick Layout header and toolbar compact */
+.preview-header {
+    padding: 2px 6px !important;
+}
+
+.preview-header button {
+    height: 20px !important;
+    font-size: 10px !important;
+    width: auto !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+.preview-toolbar {
+    padding: 2px 4px !important;
+}
+
+.preview-toolbar button {
+    height: 22px !important;
+    font-size: 12px !important;
+}
+
+.prv-spinbox input[type="number"] {
+    height: 22px !important;
+    font-size: 12px !important;
+    padding: 0 16px 0 4px !important;
+}
+
+.prv-spinbox-btns button {
+    height: auto !important;
+    font-size: 6px !important;
+    line-height: 1 !important;
+}
+
+/* FX Manager compact headers */
+.fx-header {
+    padding: 2px 6px !important;
+}
+
+.fx-header button {
+    padding: 2px 6px !important;
+    font-size: 10px !important;
+    height: auto !important;
+}
+
+.fx-toolbar {
+    padding: 2px 4px !important;
+}
+
+#btnFxApply {
+    height: 22px !important;
+    font-size: 10px !important;
+    padding: 0 10px !important;
+}
+
+#btnOpenFX {
+    height: 24px !important;
+    font-size: 11px;
+}
+
+#btnOpenTexter {
+    height: 24px !important;
+    font-size: 11px;
+}
+
+/* ============================================================
+   UTILITIES & OVERRIDES
+   ============================================================ */
+.footer-credit {
+    font-size: 9px;
+    color: #555;
+    user-select: none;
+    pointer-events: none;
+}
+
+.sortable-fallback {
+    opacity: 0.6;
+    border: 1px dashed #f90;
+    background: #3a3500;
+}
+
+#saveLayoutBtn {
+    background: #2a5a2a;
+    border-color: #6a6;
+}
+
+#saveLayoutBtn:hover {
+    background: #3a7a3a;
+}
+
+.draggable-only {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.resize-handle {
+    background: #777;
+    transition: background 0.1s;
+}
+
+.resize-handle:hover {
+    background: #f90;
+}
+
+body.edit-mode.actions-hidden #addRowBtn {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Scrollbar for body and panel */
+body::-webkit-scrollbar,
+.panel::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+    background: #1a1a1a;
+}
+
+body::-webkit-scrollbar-track,
+.panel::-webkit-scrollbar-track {
+    background: #2b2b2b;
+}
+
+body::-webkit-scrollbar-thumb,
+.panel::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 2px;
+}
+
+body::-webkit-scrollbar-thumb:hover,
+.panel::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+}
+
+/* Scrollbar for preview and settings popups (already defined, ensure consistency) */
+.preview-grid::-webkit-scrollbar,
+.setting-popup::-webkit-scrollbar,
+.preview-subpopup-body::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+    background: #1a1a1a;
+}
+
+.preview-grid::-webkit-scrollbar-track,
+.setting-popup::-webkit-scrollbar-track,
+.preview-subpopup-body::-webkit-scrollbar-track {
+    background: #2b2b2b;
+}
+
+.preview-grid::-webkit-scrollbar-thumb,
+.setting-popup::-webkit-scrollbar-thumb,
+.preview-subpopup-body::-webkit-scrollbar-thumb {
+    background: #777;
+    border-radius: 2px;
+}
+
+.preview-grid::-webkit-scrollbar-thumb:hover,
+.setting-popup::-webkit-scrollbar-thumb:hover,
+.preview-subpopup-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Additional adjustments for preview header buttons */
+.preview-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+}
+
+#btnPreviewLoad {
+    justify-self: start;
+}
+
+#btnPreviewToggle {
+    justify-self: center;
+}
+
+#btnPreviewMode {
+    justify-self: end;
+}
+
+/* 2 nút đổi dòng dùng chung đúng ô lưới với Load (chỉ 1 trong 2 hiện tại 1 thời điểm) —
+   khớp chiều ngang với nút Horizontal/Vertical cho cân đối 2 bên. */
+#btnPreviewLoad, #btnQLLineNavGroup {
+    grid-column: 1;
+    justify-self: start;
+}
+#btnPreviewToggle { grid-column: 2; }
+#btnPreviewMode { grid-column: 3; }
+#btnQLLineNavGroup {
+    display: flex;
+    gap: 2px;
+    width: 56px;
+}
+#btnQLLineNavGroup button {
+    flex: 1;
+    width: auto !important;
+    height: 20px !important;
+    font-size: 10px !important;
+    padding: 0 !important;
+}
+
+/* Ensure button sizes for preview header */
+.preview-header button {
+    width: 36px;
+    height: 28px;
+}
+
+/* ============================================================
+   FIX: FX STUDIO CO GIÃN CHIỀU NGANG
+   ============================================================ */
+#fxOverlay,
+#fxPopup {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+}
+
+.fx-scroll {
+    width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+.fx-section,
+.fx-section-header,
+.fx-row,
+.fx-angle-row {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+.fx-section-header .fx-swatches {
+    flex-shrink: 0;
+}
+
+.fx-row input[type="range"] {
+    flex: 1;
+    min-width: 40px;
+}
+
+.fx-row-val,
+#gradientAngleInput,
+#shadowAngleInput {
+    width: 42px !important;
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   ĐỒNG BỘ GÓC STROKE GRADIENT VỚI GRADIENT & DROP SHADOW
+   ============================================================ */
+#strokeAngleCanvas {
+    width: 40px;
+    height: 40px;
+    cursor: grab;
+    flex-shrink: 0;
+}
+#strokeAngleCanvas:active {
+    cursor: grabbing;
+}
+#strokeAngleInput {
+    width: 42px;
+    height: 22px;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    font-size: 11px;
+    text-align: center;
+    border-radius: 3px;
+    box-sizing: border-box;
+    margin-left: auto;
+}
+.fx-angle-row .fx-angle-label {
+    font-size: 10px;
+    color: #999;
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   NGĂN CÁCH CÁC MỤC TRONG FX STUDIO (KHÔNG SÁNG QUÁ)
+   ============================================================ */
+.fx-section {
+    padding: 6px 4px;
+    border-bottom: 1px solid #3a3a3a;
+    margin-bottom: 2px;
+}
+.fx-section:last-child {
+    border-bottom: none;
+}
+.fx-section-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 3px;
+    padding: 2px 0;
+}
+.fx-section-header label {
+    font-size: 11px;
+    font-weight: bold;
+    color: #bbb;
+    cursor: pointer;
+}
+.fx-section-body {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.fx-row {
+    margin-bottom: 4px;
+}
+.fx-row:last-child {
+    margin-bottom: 0;
+}
+.fx-section:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+    transition: background-color 0.15s;
+}
+
+/* Đảm bảo tông tối cho các điều khiển */
+.color-swatch {
+    border-color: #555;
+}
+.fx-select {
+    background: #222;
+    border-color: #555;
+    color: #ccc;
+}
+.fx-row-val,
+#gradientAngleInput,
+#shadowAngleInput,
+#strokeAngleInput {
+    background: #222;
+    border-color: #555;
+    color: #ccc;
+}
+
+/* ============================================================
+   NÚT CLEAR TRONG FX TOOLBAR
+   ============================================================ */
+#btnFxClear {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 10px;
+    cursor: pointer;
+    padding: 2px 0;
+    text-decoration: underline;
+    font-family: Arial, sans-serif;
+}
+#btnFxClear:hover {
+    color: #ccc;
+}
+
+/* ============================================================
+   HOVER NHẸ CHO KHUNG SECTION FX STUDIO & QUICK LAYOUT
+   ============================================================ */
+#section-fx:hover,
+#section-preview:hover {
+    border-color: #6a6a6a !important;
+    transition: border-color 0.2s ease;
+}

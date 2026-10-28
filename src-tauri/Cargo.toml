@@ -1,0 +1,28 @@
+[package]
+name = "typocom"
+version = "0.1.0"
+edition = "2021"
+default-run = "typocom"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-window-state = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Windows COM automation to talk to a running Photoshop.exe.
+# Only ever compiled on Windows — on other targets photoshop.rs is stubbed out.
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+  "Win32_Foundation",
+  "Win32_System_Com",
+  "Win32_System_Ole",
+  "Win32_UI_Input_KeyboardAndMouse",
+] }
+
+[[bin]]
+name = "typocom"
+path = "src/main.rs"

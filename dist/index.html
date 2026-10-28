@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TypoCOM</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="panel">
+
+  <div class="section" id="section-layout" data-drag-id="layout">
+    <div class="section-title">Layout Cases</div>
+    <div class="case-grid">
+      <div class="case-row">
+        <button onclick="applyCase(1)">C1</button>
+        <button onclick="applyCase(2)">C2</button>
+        <button onclick="applyCase(3)">C3</button>
+      </div>
+      <div class="case-row">
+        <button onclick="applyCase(4)">C4</button>
+        <button onclick="applyCase(5)">C5</button>
+        <button onclick="applyCase(6)">C6</button>
+      </div>
+      <div class="case-row">
+        <button onclick="applyCase(7)">C7</button>
+        <button onclick="applyCase(8)">C8</button>
+        <button onclick="applyCase(9)">C9</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="section-preview" data-drag-id="preview">
+    <button id="btnPreviewLayout">Quick Layout</button>
+    <div id="previewOverlay">
+      <div id="previewPopup">
+	<div class="preview-header">
+          <button id="btnPreviewLoad">Load</button>
+          <div id="btnQLLineNavGroup" style="display:none;">
+            <button id="btnQLLinePrev" title="Previous line">▲</button>
+            <button id="btnQLLineNext" title="Next line">▼</button>
+          </div>
+          <button id="btnPreviewToggle">Horizontal</button>
+          <button id="btnPreviewMode" title="Toggle toolbar mode">⇆</button>
+        </div>
+        <div class="preview-grid" id="previewGrid"></div>
+	<div class="resize-handle" style="height: 5px; background: #555; cursor: ns-resize; border-radius: 0 0 6px 6px;"></div>
+<div class="preview-toolbar" id="previewToolbar">
+          <!-- Legacy giữ lại để JS cũ không crash, ẩn đi -->
+          <button id="btnPreviewFont" style="display:none"></button>
+          <span class="size-group" style="display:none">
+            <button id="btnPreviewSizeDown"></button>
+            <span id="previewSizeDisplay"></span>
+            <button id="btnPreviewSizeUp"></button>
+          </span>
+          <!-- Toolbar mới -->
+          <button id="btnPrvLeft" class="prv-left-btn">Font</button>
+          <div class="prv-ctrl-group">
+            <button class="prv-apply-btn" id="btnPrvMinus">−</button>
+          <div class="prv-spinbox" id="sizeControl">
+  <input type="number" id="prvNumInput" value="14" min="1" max="999">
+  <div class="prv-spinbox-btns">
+    <button id="btnPrvSpinUp">▴</button>
+    <button id="btnPrvSpinDn">▾</button>
+  </div>
+</div>
+            <button class="prv-apply-btn" id="btnPrvPlus">+</button>
+          </div>
+        </div>
+        <div id="fontPickerPopup">
+          <div class="preview-subpopup-header">
+            <span>Font List</span>
+            <button id="btnFontPickerClose">✕</button>
+          </div>
+          <div class="preview-subpopup-body" id="fontPickerList"></div>
+          <div class="preview-subpopup-footer-add">
+    <button id="btnAddFont">[+] Add slot (max 5)</button>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="section" id="section-fx" data-drag-id="fx">
+  <button id="btnOpenFX" style="width:100%; height:36px;">FX Studio</button>
+  <div id="fxOverlay" style="display:none; position:relative; margin-top:4px;">
+    <div id="fxPopup">
+      <div class="fx-header">
+        <button id="btnFxSync">Sync</button>
+        <div id="fxSpinner" style="display: none; width: 16px; height: 16px; border: 2px solid #aaa; border-top-color: #f90; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 4px;"></div>
+        <button id="btnFxClose">Close</button>
+      </div>
+
+      <div class="fx-scroll">
+        <!-- Gradient -->
+        <div class="fx-section">
+          <div class="fx-section-header">
+            <label><input type="checkbox" class="fx-enable" data-fx="gradientFill"> Gradient</label>
+            <div class="fx-swatches">
+              <button class="quick-fgbg" title="FG for color 1, BG for color 2">🌢</button>
+              <div class="color-swatch" id="gradientColor1" title="Color 1"></div>
+              <div class="color-swatch" id="gradientColor2" title="Color 2"></div>
+            </div>
+          </div>
+          <div class="fx-section-body">
+            <div class="fx-angle-row">
+              <canvas id="gradientAngleCanvas" width="20" height="20"></canvas>
+              <span class="fx-angle-label">Angle</span>
+              <input type="number" id="gradientAngleInput" min="-180" max="180" value="0" step="1">
+            </div>
+          </div>
+        </div>
+
+               <!-- Stroke -->
+        <div class="fx-section">
+          <div class="fx-section-header">
+            <label><input type="checkbox" class="fx-enable" data-fx="frameFX"> Stroke</label>
+            <div class="fx-swatches">
+              <div class="color-swatch" id="strokeColor1" title="Stroke Color 1"></div>
+              <div class="color-swatch" id="strokeColor2" title="Stroke Color 2"></div>
+            </div>
+          </div>
+          <div class="fx-section-body">
+            <div class="fx-row">
+              <span class="fx-row-label">Size</span>
+              <input type="range" id="strokeSize1" min="0" max="20" value="2">
+              <input type="number" class="fx-row-val" id="strokeSize1Val" value="2" min="0" max="50" step="1">
+            </div>
+            <div class="fx-row" id="strokePositionRow">
+              <span class="fx-row-label">Position</span>
+              <select id="strokePosition" class="fx-select">
+                <option value="outsetFrame">Outside</option>
+                <option value="insetFrame">Inside</option>
+                <option value="centerFrame">Center</option>
+              </select>
+            </div>
+            <div class="fx-row" id="strokeTypeRow">
+              <span class="fx-row-label">Type</span>
+              <select id="strokeGradientType" class="fx-select">
+                <option value="linear">Linear</option>
+                <option value="radial">Radial</option>
+                <option value="angle">Angle</option>
+                <option value="reflected">Reflected</option>
+                <option value="diamond">Diamond</option>
+              </select>
+            </div>
+            <div class="fx-angle-row" id="strokeAngleRow">
+              <canvas id="strokeAngleCanvas" width="20" height="20"></canvas>
+              <span class="fx-angle-label">Angle</span>
+              <input type="number" id="strokeAngleInput" min="-180" max="180" value="0" step="1">
+            </div>
+          </div>
+        </div>
+
+        
+        <!-- Outer Glow -->
+        <div class="fx-section">
+          <div class="fx-section-header">
+            <label><input type="checkbox" class="fx-enable" data-fx="outerGlow"> Outer Glow</label>
+            <div class="fx-swatches">
+              <div class="color-swatch" id="glowColor" title="Glow Color"></div>
+            </div>
+          </div>
+          <div class="fx-section-body">
+            <div class="fx-row">
+              <span class="fx-row-label">Opacity</span>
+              <input type="range" id="glowOpacity" min="0" max="100" value="100">
+              <input type="number" class="fx-row-val" id="glowOpacityVal" value="100" min="0" max="100" step="1">
+            </div>
+            <div class="fx-row">
+              <span class="fx-row-label">Size</span>
+              <input type="range" id="glowSize" min="0" max="250" value="20">
+              <input type="number" class="fx-row-val" id="glowSizeVal" value="20" min="0" max="1000" step="1">
+            </div>
+            <div class="fx-row">
+              <span class="fx-row-label">Spread</span>
+              <input type="range" id="glowSpread" min="0" max="100" value="5">
+              <input type="number" class="fx-row-val" id="glowSpreadVal" value="5" min="0" max="100" step="1">
+            </div>
+          </div>
+        </div>
+
+        <!-- Drop Shadow -->
+        <div class="fx-section">
+          <div class="fx-section-header">
+            <label><input type="checkbox" class="fx-enable" data-fx="dropShadow"> Drop Shadow</label>
+            <div class="fx-swatches">
+              <div class="color-swatch" id="shadowColor" title="Shadow Color"></div>
+            </div>
+          </div>
+          <div class="fx-section-body">
+            <div class="fx-row">
+              <span class="fx-row-label">Blend</span>
+              <select id="shadowBlendMode" class="fx-select">
+                <option value="normal"selected>Normal</option>
+                <option value="multiply">Multiply</option>
+                <option value="screen">Screen</option>
+                <option value="overlay">Overlay</option>
+                <option value="darken">Darken</option>
+                <option value="lighten">Lighten</option>
+                <option value="colorBurn">Color Burn</option>
+                <option value="colorDodge">Color Dodge</option>
+                <option value="linearBurn">Linear Burn</option>
+                <option value="linearDodge">Linear Dodge (Add)</option>
+                <option value="hardLight">Hard Light</option>
+                <option value="softLight">Soft Light</option>
+                <option value="difference">Difference</option>
+                <option value="exclusion">Exclusion</option>
+                <option value="hue">Hue</option>
+                <option value="saturation">Saturation</option>
+                <option value="color">Color</option>
+                <option value="luminosity">Luminosity</option>
+              </select>
+            </div>
+            <!-- Hàng góc (Angle) -->
+            <div class="fx-angle-row">
+              <canvas id="shadowAngleCanvas" width="20" height="20"></canvas>
+              <span class="fx-angle-label">Angle</span>
+              <input type="number" id="shadowAngleInput" min="-180" max="180" value="30" step="1">
+            </div>
+            <!-- Opacity – đặt sau Angle, trước Distance -->
+            <div class="fx-row">
+              <span class="fx-row-label">Opacity</span>
+              <input type="range" id="shadowOpacity" min="0" max="100" value="100">
+              <input type="number" class="fx-row-val" id="shadowOpacityVal" value="100" min="0" max="100" step="1">
+            </div>
+            <div class="fx-row">
+              <span class="fx-row-label">Distance</span>
+              <input type="range" id="shadowDistance" min="0" max="100" value="0">
+              <input type="number" class="fx-row-val" id="shadowDistanceVal" value="0" min="0" max="30000" step="1">
+            </div>
+            <div class="fx-row">
+              <span class="fx-row-label">Spread</span>
+              <input type="range" id="shadowSpread" min="0" max="100" value="20">
+              <input type="number" class="fx-row-val" id="shadowSpreadVal" value="20" min="0" max="100" step="1">
+            </div>
+            <div class="fx-row">
+              <span class="fx-row-label">Size</span>
+              <input type="range" id="shadowSize" min="0" max="250" value="100">
+              <input type="number" class="fx-row-val" id="shadowSizeVal" value="100" min="0" max="1000" step="1">
+            </div>
+          </div>
+        </div>
+
+                <!-- Text Color -->
+        <div class="fx-section" id="fxTextColorSection">
+          <div class="fx-section-header">
+            <label><input type="checkbox" class="fx-enable" id="enableTextColor" data-fx="textColor"> Text Color</label>
+            <div class="fx-swatches">
+              <div class="color-swatch" id="textColorSwatch" title="Text Color"></div>
+            </div>
+          </div>
+          <div class="fx-section-body">
+
+            <div class="fx-row">
+              <span class="fx-row-label">Opacity</span>
+              <input type="range" id="textColorOpacity" min="0" max="100" value="100">
+              <input type="number" class="fx-row-val" id="textColorOpacityVal" value="100" min="0" max="100" step="1">
+            </div>
+
+            <div class="fx-row">
+              <span class="fx-row-label">Fill</span>
+              <input type="range" id="textColorFill" min="0" max="100" value="100">
+              <input type="number" class="fx-row-val" id="textColorFillVal" value="100" min="0" max="100" step="1">
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /fx-scroll -->
+
+      <div class="fx-resize-handle"></div>
+
+<div class="fx-toolbar">
+  <button id="btnFxToggleMode">Less</button>
+  <button id="btnFxApply">Apply</button>
+  <button id="btnFxClear">Clear</button>
+</div>
+    </div><!-- /fxPopup -->
+  </div><!-- /fxOverlay -->
+</div><!-- /section-fx -->
+
+<div class="section" id="section-texter" data-drag-id="texter">
+  <button id="btnOpenTexter" style="width:100%;">Typer Box</button>
+  <div id="texterOverlay" style="display:none; margin-top:4px;">
+
+    <input type="file" id="importStylesFile" accept=".json" style="display:none;">
+
+    <!-- Cố định ngay dưới đầu khung — KHÔNG cuộn theo, chỉ phần Style bên dưới mới cuộn -->
+    <div class="tt-text-block" id="pasteTextBlock">
+      <div class="tt-text-lines" id="pasteLineList"></div>
+      <textarea id="pasteTextInput" class="tt-text-area" rows="2" wrap="soft" placeholder="Paste your translation here..."></textarea>
+      <div class="tt-text-measure" id="pasteTextMeasure"></div>
+    </div>
+    <div class="tt-text-resize-handle" id="pasteTextResizeHandle"></div>
+
+    <!-- Neo cứng ngay dưới ô dán — KHÔNG cuộn theo, chỉ phần Style bên dưới mới cuộn -->
+    <div class="tt-styles-toolbar">
+      <button id="btnLinePrev" class="tt-folder-add-btn" title="Previous line">▲</button>
+      <button id="btnLineNext" class="tt-folder-add-btn" title="Next line">▼</button>
+      <span style="flex:1;"></span>
+      <button id="btnAddFolder" class="tt-folder-add-btn" title="New folder"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z"/></svg></button>
+      <button id="btnSaveTextPreset" class="tt-folder-add-btn" title="Add style">+</button>
+    </div>
+
+    <div class="tt-texter-scroll" id="texterScroll">
+      <div id="stylesFoldersContainer"></div>
+    </div>
+    <div class="tt-resize-handle" id="texterResizeHandle"></div>
+
+  </div>
+</div>
+
+<!-- STYLE EDIT PANEL -->
+<div id="styleEditOverlay" class="tt-style-edit-overlay" style="display:none;">
+  <div class="tt-style-edit-panel">
+    <div class="tt-style-edit-header">
+      <span id="styleEditTitle">Style</span>
+      <button id="btnStyleEditClose" class="tt-style-edit-x"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="tt-style-edit-body">
+      <label class="tt-style-edit-row">
+        <span>Name</span>
+        <input type="text" id="styleEditName" placeholder="e.g. Title 60px">
+      </label>
+      <label class="tt-style-edit-row">
+        <span>Folder</span>
+        <select id="styleEditFolder"></select>
+      </label>
+
+      <button id="btnStyleEditCopyFromLayer" class="tt-style-edit-copybtn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2 10V2H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Copy layer style</button>
+
+      <div class="tt-style-edit-fields" id="styleEditFields" style="display:none;">
+        <label class="tt-style-edit-row">
+          <span>Font</span>
+          <select id="styleEditFont"></select>
+        </label>
+        <div class="tt-style-edit-row2">
+          <div class="tt-field-row" title="Font size">
+            <span class="tt-field-icon"><svg width="16" height="14" viewBox="0 0 16 14" fill="none"><path d="M1 2H9M5 2V12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 1V13" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M11 3L13 1L15 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 11L13 13L15 11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div class="tt-numfield"><input type="number" id="styleEditSize" min="1" step="0.5"><span class="tt-unit">pt</span></div>
+          </div>
+          <div class="tt-field-row" title="Line spacing">
+            <span class="tt-field-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3H9M7 3V11M5 11H9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 5V1M2 1L1 2.5M2 1L3 2.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 9V13M2 13L1 11.5M2 13L3 11.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div class="tt-numfield"><input type="number" id="styleEditLeading" min="0" step="0.5" placeholder="auto"><span class="tt-unit">pt</span></div>
+          </div>
+        </div>
+        <div class="tt-style-edit-row2" id="styleEditAutoLeadingRow">
+          <label title="Auto leading percentage"><span>Auto leading %</span><input type="number" id="styleEditAutoLeadingPct" min="0" step="1" placeholder="120"></label>
+        </div>
+        <div class="tt-style-edit-row2">
+          <div class="tt-field-row" title="Kerning method">
+            <span class="tt-field-icon"><svg width="16" height="14" viewBox="0 0 16 14" fill="none"><text x="0" y="10" font-size="9" fill="currentColor" font-family="sans-serif">AW</text></svg></span>
+            <select id="styleEditKerning">
+              <option value="metricsKern">Metrics</option>
+              <option value="opticalKern">Optical</option>
+              <option value="noKern">None</option>
+            </select>
+          </div>
+          <div class="tt-field-row" title="Letter spacing">
+            <span class="tt-field-icon"><svg width="16" height="14" viewBox="0 0 16 14" fill="none"><text x="2" y="10" font-size="9" fill="currentColor" font-family="sans-serif">A-Z</text></svg></span>
+            <div class="tt-numfield"><input type="number" id="styleEditTracking" step="10"></div>
+          </div>
+        </div>
+        <div class="tt-style-edit-row2">
+          <div class="tt-field-row" title="Vertical scale">
+            <span class="tt-field-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1V13M4 4L7 1L10 4M4 10L7 13L10 10" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div class="tt-numfield"><input type="number" id="styleEditVScale" step="1" min="1"><span class="tt-unit">%</span></div>
+          </div>
+          <div class="tt-field-row" title="Horizontal scale">
+            <span class="tt-field-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7H13M4 4L1 7L4 10M10 4L13 7L10 10" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div class="tt-numfield"><input type="number" id="styleEditHScale" step="1" min="1"><span class="tt-unit">%</span></div>
+          </div>
+        </div>
+        <div class="tt-style-edit-row2">
+          <div class="tt-field-row" title="Baseline shift">
+            <span class="tt-field-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 11H13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M4 3V9M10 3V9M4 6H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div class="tt-numfield"><input type="number" id="styleEditBaseline" step="0.5"><span class="tt-unit">pt</span></div>
+          </div>
+          <div class="tt-field-row" title="Text color">
+            <span class="tt-field-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><text x="1" y="11" font-size="11" fill="currentColor" font-family="serif" font-weight="700">A</text></svg></span>
+            <input type="color" id="styleEditColor" class="tt-colorswatch">
+          </div>
+        </div>
+        <div class="tt-style-edit-row2">
+          <div class="tt-field-row" title="Anti-aliasing method" style="flex:1;">
+            <span class="tt-field-icon"><svg width="16" height="14" viewBox="0 0 16 14" fill="none"><text x="0" y="11" font-size="10" fill="currentColor" font-family="sans-serif">Aa</text></svg></span>
+            <select id="styleEditAntiAlias">
+              <option value="antiAliasNone">None</option>
+              <option value="antiAliasSharp">Sharp</option>
+              <option value="antiAliasCrisp">Crisp</option>
+              <option value="antiAliasStrong">Strong</option>
+              <option value="antiAliasSmooth">Smooth</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="tt-style-toggle-row">
+          <button type="button" id="styleToggleBold" class="tt-style-toggle-btn" title="Bold"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><text x="2" y="11" font-size="12" font-weight="900" fill="currentColor" font-family="serif">B</text></svg></button>
+          <button type="button" id="styleToggleItalic" class="tt-style-toggle-btn" title="Italic"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><text x="3" y="11" font-size="12" font-style="italic" fill="currentColor" font-family="serif">I</text></svg></button>
+          <button type="button" id="styleToggleAllCaps" class="tt-style-toggle-btn" title="All Caps"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><text x="1" y="11" font-size="10" font-weight="700" fill="currentColor" font-family="serif">TT</text></svg></button>
+          <button type="button" id="styleToggleSmallCaps" class="tt-style-toggle-btn" title="Small Caps"><svg width="16" height="14" viewBox="0 0 16 14" fill="none"><text x="0" y="11" font-size="11" font-weight="700" fill="currentColor" font-family="serif">T</text><text x="8" y="11" font-size="8" font-weight="700" fill="currentColor" font-family="serif">T</text></svg></button>
+        </div>
+
+        <div class="tt-style-edit-align-row">
+          <button type="button" id="styleEditAlignLeft" class="tt-align-btn-small" data-align="left" title="Align left"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3H13M1 6H9M1 9H13M1 12H7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></button>
+          <button type="button" id="styleEditAlignCenter" class="tt-align-btn-small" data-align="center" title="Align center"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3H13M3 6H11M1 9H13M4 12H10" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></button>
+          <button type="button" id="styleEditAlignRight" class="tt-align-btn-small" data-align="right" title="Align right"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3H13M5 6H13M1 9H13M7 12H13" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></button>
+          <button type="button" id="styleToggleHyphenate" class="tt-align-btn-small" title="Hyphenate"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3H13M1 6H13M1 9H13M1 12H9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></button>
+          <button type="button" id="styleToggleHangingRoman" class="tt-align-btn-small" title="Hanging punctuation"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><text x="1" y="11" font-size="12" fill="currentColor" font-family="serif">"</text></svg></button>
+        </div>
+        <div class="tt-style-edit-align-row">
+          <button type="button" id="styleToggleSuper" class="tt-align-btn-small" title="Superscript"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><text x="0" y="13" font-size="9" fill="currentColor" font-family="serif" font-weight="700">T</text><text x="8" y="7" font-size="6" fill="currentColor" font-family="serif" font-weight="700">'</text></svg></button>
+          <button type="button" id="styleToggleSub" class="tt-align-btn-small" title="Subscript"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><text x="0" y="11" font-size="9" fill="currentColor" font-family="serif" font-weight="700">T</text><text x="8" y="14" font-size="6" fill="currentColor" font-family="serif" font-weight="700">,</text></svg></button>
+          <button type="button" id="styleToggleUnderline" class="tt-align-btn-small" title="Underline"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><text x="2" y="10" font-size="10" fill="currentColor" font-family="serif" font-weight="700">U</text><path d="M1 13H13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          <button type="button" id="styleToggleStrike" class="tt-align-btn-small" title="Strikethrough"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><text x="2" y="11" font-size="10" fill="currentColor" font-family="serif" font-weight="700">S</text><path d="M1 7H13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+        </div>
+
+        <div class="tt-style-edit-row2" style="align-items:center;">
+          <label style="flex:0 0 auto; display:flex; align-items:center; gap:4px; margin:0;" title="Enable stroke">
+            <input type="checkbox" id="styleEditStrokeEnabled" style="margin:0;"><span style="margin:0;">Stroke</span>
+          </label>
+          <div class="tt-numfield" style="flex:1;" title="Stroke size (px)">
+            <input type="number" id="styleEditStrokeSize" min="0" step="0.5"><span class="tt-unit">px</span>
+          </div>
+          <input type="color" id="styleEditStrokeColor" class="tt-colorswatch tt-colorswatch-lg" title="Stroke color">
+        </div>
+      </div>
+    </div>
+    <div class="tt-style-edit-footer">
+      <button id="btnStyleEditSave" class="tt-big-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><rect x="4" y="1" width="6" height="4" rx="0.5" fill="currentColor"/><rect x="3" y="7" width="8" height="5" rx="0.5" fill="currentColor"/></svg> Save</button>
+      <button id="btnStyleEditDelete" class="tt-style-edit-delete" style="display:none;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4H12M5 4V2.5C5 2.22 5.22 2 5.5 2H8.5C8.78 2 9 2.22 9 2.5V4M5.5 6V10.5M8.5 6V10.5M3 4L3.5 11.5C3.5 11.78 3.72 12 4 12H10C10.28 12 10.5 11.78 10.5 11.5L11 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT CHOICE DIALOG -->
+<div id="importChoiceOverlay" class="tt-style-edit-overlay" style="display:none;">
+  <div class="tt-style-edit-panel" style="max-width:280px;">
+    <div class="tt-style-edit-header">
+      <span>Import styles</span>
+    </div>
+    <div class="tt-style-edit-body" style="font-size:11px; color:#ccc; line-height:1.6;">
+      You already have styles/folders saved.<br><br>
+      Delete them and import fresh, or keep them and just add the new ones?
+    </div>
+    <div class="tt-style-edit-footer">
+      <button id="btnImportChoiceDelete" class="tt-style-edit-delete">Delete</button>
+      <button id="btnImportChoiceKeep" class="tt-big-btn">Keep</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="section" id="section-split" data-drag-id="split">
+
+
+  <div class="section-title">Split Even</div>
+  <div class="split-row">
+    <button onclick="splitEven(2)">2 lines</button>
+    <button onclick="splitEven(3)">3 lines</button>
+    <button onclick="splitEven(4)">4 lines</button>
+  </div>
+</div>
+
+<div class="section" id="section-actions" data-drag-id="actions">
+  <div class="section-title">Actions</div>
+  <div class="action-grid">
+    <!-- hàng 1 -->
+   <div class="action-row" id="row-group-center">
+  <button data-tool="groupText" onclick="runBtn('groupTextLayers()', this)">Group</button>
+  <button data-tool="center"    onclick="runBtn('alignCenterSimple()', this)">Center</button>
+</div>
+
+<div class="action-row" id="row-copypaste">
+  <button data-tool="copyFX"  id="btnCopyFX" onclick="doCopyFX()">Copy FX</button>
+  <button data-tool="pasteFX" id="btnPasteFX" onclick="doPasteFX()" disabled>Paste FX</button>
+</div>
+
+<div class="action-row" id="row-select-logo">
+  <button data-tool="selectForm" onclick="runBtn('selectForm()', this)">Select</button>
+  <button data-tool="logo"       id="btnLogo" onclick="runPlaceLogo(this)">Logo</button>
+</div>
+  </div>
+</div>
+
+ <div class="panel-footer">
+    <div id="editModeButtons" style="display:none; width:100%; gap: 4px; margin-bottom: 6px;">
+      <button id="addRowBtn" style="flex: 1; height: 28px;">[+] Add Row</button>
+      <button id="saveLayoutBtn" style="flex: 1; height: 28px;">🖫 Save</button>
+    </div>
+    <div id="mbInfoBar" class="mb-info-bar" style="display:none;">
+      <span id="mbInfoCount">0 selected</span>
+      <span class="mb-info-sep">—</span>
+      <button id="btnMBPause" class="mb-info-link">Pause</button>
+      <span class="mb-info-sep">—</span>
+      <button id="btnMBClear" class="mb-info-link">Clear</button>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <button class="setting-btn" id="btnToggleAutoShape" title="Auto Shape">
+        <span id="autoShapeDot" class="mb-dot"></span><svg width="16" height="14" viewBox="0 0 16 14" fill="none"><ellipse cx="8" cy="7" rx="7" ry="6" stroke="currentColor" stroke-width="1.1"/><path d="M6 4H10M4.5 7H11.5M6 10H10" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+      </button>
+      <button class="setting-btn" id="btnToggleAutoFit" title="Auto Fit">
+        <span id="autoFitDot" class="mb-dot"></span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1"/><path d="M4 4H10M7 4V10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M2.5 2.5L1 1M11.5 2.5L13 1M2.5 11.5L1 13M11.5 11.5L13 13" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></svg>
+      </button>
+      <button class="setting-btn" id="btnAlignSimple" title="Align">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+      </button>
+      <button class="setting-btn" id="btnMultipleBubble" title="Multiple Bubble">
+        <span id="mbDot" class="mb-dot"></span><svg width="18" height="16" viewBox="0 0 20 18" fill="none"><rect x="1" y="1" width="11" height="8" rx="2" stroke="currentColor" stroke-width="1.1"/><path d="M4 9L3 13L7 9.5" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/><ellipse cx="13.5" cy="10.5" rx="5.5" ry="5" stroke="currentColor" stroke-width="1.1"/><path d="M17 14.5L18.5 17L14 15" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </button>
+      <div class="setting-wrapper" style="position:relative;">
+        <button class="setting-btn" id="settingBtn" title="Settings"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+        <div class="setting-popup" id="settingPopup">
+        <div class="setting-item" data-action="chooseLogo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;flex-shrink:0;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Choose Logo</div>
+        <div class="setting-separator"></div>
+        <div class="setting-item" id="advancedSettingToggle" style="cursor: pointer; justify-content: space-between;">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;flex-shrink:0;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Advanced Setting</span>
+          <span id="advancedSettingArrow" style="font-size: 10px;">▼</span>
+        </div>
+        <div id="advancedSettingSub" style="display: none;">
+          <div class="setting-item" data-toggle="multiplePaste" style="padding-left:24px;">
+            <input type="checkbox" id="toggle_multiplePaste"> Multiple Paste FX
+          </div>
+          <div class="setting-item" data-toggle="manualLoadText" style="padding-left:24px;">
+            <input type="checkbox" id="toggle_manualLoadText"> Manual Load Text
+          </div>
+          <div class="setting-item" data-toggle="manualResizeBox" style="padding-left:24px;">
+            <input type="checkbox" id="toggle_manualResizeBox"> Manual Resize Box
+          </div>
+          <div class="setting-item" data-toggle="autoFX" style="padding-left:24px;">
+            <input type="checkbox" id="toggle_autoFX"> Auto FX
+          </div>
+          <div class="setting-item" style="padding-left:24px;">
+            <input type="checkbox" id="toggle_alwaysOnTop"> Pin Always On Top
+          </div>
+        </div>
+<div class="setting-separator"></div>
+<div class="setting-item" id="textSettingToggle" style="cursor: pointer; justify-content: space-between;">
+    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;flex-shrink:0;"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>Typer Box Setting</span>
+    <span id="textSettingArrow" style="font-size: 10px;">▼</span>
+</div>
+<div id="textSettingSub" style="display: none;">
+    <div class="setting-item" style="padding-left:24px;">
+      <input type="checkbox" id="toggle_linkQuickLayoutTexter"> Link to Quick Layout
+    </div>
+    <div class="setting-item" style="padding-left:24px;">
+      <input type="checkbox" id="toggle_snapMultiBubble"> Snap Multi Bubble
+    </div>
+    <div class="setting-item" style="padding-left:24px; display:flex; align-items:center; justify-content:space-between; gap:8px;" title="Padding used by Auto Shape/Auto Fit when calculating the text area inside a speech bubble">
+      <span>Ref No.</span>
+      <input type="number" id="inputAutoFitPadding" min="0" max="100" step="1" style="width:50px; background:#1a1a1a; color:#ddd; border:1px solid #444; border-radius:3px; padding:2px 6px; font-size:11px;">
+    </div>
+    <div class="setting-item" data-action="importStylesMain" style="padding-left:24px; cursor:pointer;">⇩ Import styles...</div>
+    <div class="setting-item" data-action="exportStylesMain" style="padding-left:24px; cursor:pointer;">⇧ Export styles...</div>
+</div>
+<div class="setting-separator"></div>
+<div class="setting-item" id="layoutManagerToggle" style="cursor: pointer; justify-content: space-between;">
+    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Panel Manager</span>
+    <span id="layoutManagerArrow" style="font-size: 10px;">▼</span>
+</div>
+<div id="layoutManagerSub" style="display: none;">
+    <div class="setting-item" data-action="toggleEditMode" style="padding-left:24px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;flex-shrink:0;"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Panel Setup</div>
+    <div class="setting-item" data-action="resetLayout" style="padding-left:24px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;flex-shrink:0;"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Reset Panel</div>
+</div>
+        <div class="setting-separator"></div>
+        <div class="setting-item" id="toolManagerToggle" style="cursor: pointer; justify-content: space-between;">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;flex-shrink:0;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Hide/Unhide Tool</span>
+          <span id="toolManagerArrow" style="font-size: 10px;">▼</span>
+        </div>
+        <div id="toolManagerSub" style="display: none;">
+  <div class="setting-item" data-toggle="quickLayout">
+    <input type="checkbox" id="toggle_quickLayout"> Quick Layout
+  </div>
+  <div class="setting-item" data-toggle="texterStudio">
+    <input type="checkbox" id="toggle_texterStudio"> Typer Box
+  </div>
+  <div class="setting-item" style="justify-content: space-between; padding-right: 8px;">
+    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+      <input type="checkbox" id="toggle_fxManager" data-toggle="fxManager">
+      <span>FX Studio</span>
+    </label>
+    <span id="fxManagerSubArrow" style="font-size: 10px; cursor: pointer; user-select: none;">▼</span>
+  </div>
+  <div id="fxManagerSub" style="display: none;">
+    <div class="setting-item" style="padding-left: 24px;">
+      <input type="checkbox" id="toggle_fx_gradientFill"> Gradient
+    </div>
+    <div class="setting-item" style="padding-left: 24px;">
+      <input type="checkbox" id="toggle_fx_frameFX"> Stroke
+    </div>
+    <div class="setting-item" style="padding-left: 24px;">
+      <input type="checkbox" id="toggle_fx_outerGlow"> Outer Glow
+    </div>
+    <div class="setting-item" style="padding-left: 24px;">
+      <input type="checkbox" id="toggle_fx_dropShadow"> Drop Shadow
+    </div>
+    <div class="setting-item" style="padding-left: 24px;">
+      <input type="checkbox" id="toggle_fx_textColor"> Text Color
+    </div>
+  </div>
+  <div class="setting-item" data-toggle="layoutCases">
+    <input type="checkbox" id="toggle_layoutCases"> Layout Cases
+  </div>
+  <div class="setting-item" data-toggle="splitEven">
+    <input type="checkbox" id="toggle_splitEven"> Split Even
+  </div>
+<!-- Actions toggle + expand -->
+<div class="setting-item" style="justify-content: space-between; padding-right: 8px;">
+  <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+    <input type="checkbox" id="toggle_actionsSection" data-toggle="actionsSection">
+    <span>Actions</span>
+  </label>
+  <span id="actionsSubArrow" style="font-size: 10px; cursor: pointer; user-select: none;">▼</span>
+</div>
+<div id="actionsSub" style="display: none;">
+  <div class="setting-item" data-toggle="center" style="padding-left: 24px;">
+    <input type="checkbox" id="toggle_center"> Center
+  </div>
+  <div class="setting-item" data-toggle="groupText" style="padding-left: 24px;">
+    <input type="checkbox" id="toggle_groupText"> Group TEXT
+  </div>
+  <div class="setting-item" data-toggle="copyFX" style="padding-left: 24px;">
+    <input type="checkbox" id="toggle_copyFX"> Copy FX
+  </div>
+  <div class="setting-item" data-toggle="pasteFX" style="padding-left: 24px;">
+    <input type="checkbox" id="toggle_pasteFX"> Paste FX
+  </div>
+  <div class="setting-item" data-toggle="selectForm" style="padding-left: 24px;">
+    <input type="checkbox" id="toggle_selectForm"> SelectForm
+  </div>
+  <div class="setting-item" data-toggle="logo" style="padding-left: 24px;">
+    <input type="checkbox" id="toggle_logo"> Logo
+  </div>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div id="colorPickerPopup" style="display: none;">
+  <div class="color-presets">
+    <div class="recent-colors"></div>
+    <div class="color-grid" id="colorGrid"></div>
+  </div>
+</div>
+
+<script src="cep-polyfill.js"></script>
+<script src="lib/Sortable.min.js"></script>
+<script src="scripts.js"></script>
+</body>
+</html>

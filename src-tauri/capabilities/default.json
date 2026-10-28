@@ -1,0 +1,11 @@
+{
+  "identifier": "default",
+  "description": "Quyền mặc định cho cửa sổ chính — cần cho tính năng Pin Always On Top và auto-resize theo nội dung panel.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-set-size",
+    "core:window:allow-set-min-size"
+  ]
+}
